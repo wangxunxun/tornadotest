@@ -3,7 +3,7 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import os.path
-from app.handlers.baseHandler import MainHandler,BookModule,RecommendedHandler
+from app.handlers.baseHandler import MainHandler,BookModule,RecommendedHandler,LoginHandler,RegistHandler
 
 from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
@@ -11,7 +11,9 @@ define("port", default=8000, help="run on the given port", type=int)
 class Application(tornado.web.Application):
     def __init__(self):
         handlers = [
-            (r"/", MainHandler),(r"/recommended",RecommendedHandler)
+            (r"/", MainHandler),(r"/recommended",RecommendedHandler),
+            (r"/login",LoginHandler),
+            (r"/regist",RegistHandler)
         ]
         
         settings = dict(

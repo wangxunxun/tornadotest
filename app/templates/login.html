@@ -1,0 +1,23 @@
+{% extends "main.html" %}
+
+
+{% block body %}
+<div class="login">
+    <h3><img src="{{ static_url("images/logo1.gif") }}" alt="博彦科技工作汇报系统"></h3>
+    <form method="post" onsubmit="return true"  action="/login">
+        <ul class="fix">
+            <li><span>邮　箱</span><input name="email" type="text" value="" /></li>
+            <li><span>密　码</span><input name="password" type="password" value="" /></li>
+        </ul>
+        <div class="btn fix">
+            <input type="submit" class="modbtn1" value="登陆" />
+            <a class="a_r" href="/regist">注册</a>
+        </div>
+    </form>
+</div>
+{% if errormessage %}
+<script>
+     alert("{{ errormessage }}")
+</script>
+{% end %}
+{% end %}
