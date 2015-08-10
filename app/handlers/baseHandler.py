@@ -15,63 +15,18 @@ class BaseHandler(tornado.web.RequestHandler):
 
     def on_finish(self):
         self.session.close()
+    def get_current_user(self):
+        return self.get_secure_cookie("user")
 
-
-class MainHandler(BaseHandler):
-    def get(self):
-        self.render(
-            "index.html",
-            
-        )
-class LoginHandler(BaseHandler):
-    def get(self):
-        self.render(
-            "login.html",
-            
-            errormessage = ""
-        )
-    def post(self):
-        email = self.get_argument("email")
-        password = self.get_argument("password")
-        user = self.session.query(User).filter(User.email ==email).scalar()
-        if user:
-            if user.verify_password(password):
-                self.redirect("/")
-            else:
-                self.render("login.html", errormessage = "密码错误")
-                
-        else:
-            self.render("login.html", errormessage = "用户不存在")
-
-        
-class RegistHandler(BaseHandler):
-    def get(self):
-#        self.set_secure_cookie("user", "")
-        self.render("regist.html",
-                     regist=False, errormsg="")
-
-    def post(self):
-        email = self.get_argument("email")
-        username = self.get_argument("username")
-        password = self.get_argument("password")
-        password_t = self.get_argument("password_t")
-        if password !=password_t:
-            self.render("regist.html", regist=False, errormsg="确认密码和密码不一致")
-        elif self.session.query(User).filter(User.email == email).scalar():
-            self.render("regist.html", regist=False, errormsg="该邮箱已注册")
-        else:
-            user=User(name = username,password = password,email =email)
-            self.session.add(user)
-            self.session.commit()
-            self.render("regist.html",regist=True, username=username, errormsg="")
-
-                
 
 class BookModule(tornado.web.UIModule):
     def render(self, book):
         return self.render_string('modules/book.html', book=book)
     
+ 
+        
 class RecommendedHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
         self.render(
             "recommended.html",

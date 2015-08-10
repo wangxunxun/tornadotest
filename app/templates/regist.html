@@ -8,24 +8,23 @@
     <div class="logo"><img src="{{ static_url("images/logo2.gif") }}"></div>
 </div>
 <div class="regist">
-    <form method="post" name="login_form" action="" >
-    <div><span>邮　箱</span></div>
-    <div><input name="email" type="text" required /></div>
-    <div><span>用户名</span></div>
-    <div><input name="username" type="text" required /></div>
-    <div><span>密　码</span></div>
-    <div><input name="password" type="password"  required/></div>
-    <div><span>确认密码</span></div>
-    <div><input name="password_t" type="password" required /></div>
-
+    <form method="post" onsubmit="return true"  action="/regist">
+    {% raw xsrf_form_html() %}
+        <ul>
+            <li><span>邮　箱</span><input name="email" required="required" type="text" value="请输入邮箱"  /></li>
+            <li><span>用户名</span><input name="username" required="required" type="text" value="请输入用户名" /></li>
+            <li><span>密　码</span><input name="password" required="required" type="password" value="请输入登陆密码" /></li>
+            <li><span>确认密码</span><input name="password_t" required="required" type="password" value="请输入登陆密码" /></li>
+        </ul>
+        {% if errormsg %}
+    <div class="error_p">{{ errormsg }}</div>
+{% end %}
         <div class="btn">
-            <input type="submit" class="modbtn1" value="注册" />
+            <input type="submit" class="modbtn1" value="注　册" />
         </div>
     </form>
 </div>
-{% if errormsg %}
-    <div class="error_p">{{ errormsg }}</div>
-{% end %}
+
 {% else %}
 
 <div class="header">

@@ -5,6 +5,7 @@
 <div class="login">
     <h3><img src="{{ static_url("images/logo1.gif") }}" alt="博彦科技工作汇报系统"></h3>
     <form method="post" onsubmit="return true"  action="/login">
+    {% raw xsrf_form_html() %}
         <ul class="fix">
             <li><span>邮　箱</span><input name="email" type="text" value="" /></li>
             <li><span>密　码</span><input name="password" type="password" value="" /></li>

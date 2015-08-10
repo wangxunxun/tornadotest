@@ -1,11 +1,13 @@
 from sqlalchemy import Column, String, create_engine,ForeignKey,Integer,CHAR
 from sqlalchemy.orm import sessionmaker,relationship
 from sqlalchemy.ext.declarative import declarative_base
-from enum import unique
 from werkzeug.security import generate_password_hash, check_password_hash
+import settings
+
+
 
 BaseModel = declarative_base()
-engine = create_engine('sqlite:///F:/workplace/testtoolbyflask/data.sqlite',echo=False)
+engine = create_engine(settings.dbsqlitepath,echo=False)
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
@@ -42,7 +44,7 @@ if __name__ == '__main__':
     drop_db()
     init_db()
     email = "59853844@qq.com"
-#    user = User(name = "3333",email = "59853844@qq.com",password = "123456")
+#    user = User(name = "3333",email = "598353844@qq.com")
 #    a=session.query(User).filter(User.email ==  "59853844@qq.com").scalar()
 #    user = session.query(User).filter(User.id=='3').scalar()
 #    print(user)

@@ -3,24 +3,31 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import os.path
-from app.handlers.baseHandler import MainHandler,BookModule,RecommendedHandler,LoginHandler,RegistHandler
+from app.handlers.userHandler import LoginHandler,RegistHandler,LogoutHandler
+from app.handlers.teamHandler import TeamIndexHandler,TeamNoteamHandler
 
 from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
 
 class Application(tornado.web.Application):
-    def __init__(self):
+    def __init__(self): 
         handlers = [
-            (r"/", MainHandler),(r"/recommended",RecommendedHandler),
+
             (r"/login",LoginHandler),
-            (r"/regist",RegistHandler)
+            (r"/regist",RegistHandler),
+            (r'/logout', LogoutHandler),
+            (r"/team/noteam", TeamNoteamHandler),
+            (r"/", TeamIndexHandler),
         ]
         
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "app/templates"),
             static_path=os.path.join(os.path.dirname(__file__), "app/static"),
+            cookie_secret="bZJc2sWbQLKos6GkHn/VB9oXwQt8S0R0kRvJ5/xJ89E=",
+            xsrf_cookies=True,
             debug=True,
-            ui_modules={'Book': BookModule}
+            login_url="/login",
+
         )
         
         tornado.web.Application.__init__(self, handlers,**settings)
