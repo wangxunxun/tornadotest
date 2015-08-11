@@ -55,7 +55,21 @@ class editMemberTeamHandler(BaseHandler):
 
         teams = self.session.query(Team).all()
         userid = int(input)
-        
+        body = str(self.request.body)
+        print(self.request.body)
+        print(body.split('&'))
+        items = body.split('&')
+        i = 1
+        a = []
+        while i<len(items):
+            print(items[i])
+            if i!=len(items)-1:
+                a.append(items[i][6:len(items[i])])
+            else:
+                a.append(items[i][6:len(items[i])-1])
+            i = i+1
+        print(a)
+
         chooseteam1 = self.get_argument('teams')
         chooseteam2 = self.get_argument('teams')
         
