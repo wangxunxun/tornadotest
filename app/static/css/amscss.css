@@ -1,0 +1,5 @@
+
+.menu{width:800px; height:30px;}
+.menu ul{margin:0px; padding:0px;}
+.menu ul li{float:left; width:160px; text-align:center;  line-heigh:30px; list-style-type: none;}
+.username {text-align:right}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="adduser">
+    <form method="post" onsubmit="return true"  action="">
+    {% raw xsrf_form_html() %}
+        
+            <span>小组</span><input name="team" type="text" value="" />
+            <div>
+            {%if error%}
+            	{{error}}
+            {%else%}
+            	</br>
+            {%end%}
+
+            
+            </div>
+
+        <div class="btn fix">
+            <input type="submit" class="modbtn1" value="提交" />
+        </div>
+    </form>
+</div>
+
+
+{%end%}

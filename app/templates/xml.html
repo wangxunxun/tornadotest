@@ -1,0 +1,55 @@
+{% extends "main.html" %}
+
+{% block body %}
+    <script type="text/javascript">
+      function fileSelected() {
+        var file = document.getElementById('fileToUpload').files[0];
+        if (file) {
+          var fileSize = 0;
+          if (file.size > 1024 * 1024)
+            fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+          else
+            fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+		  document.getElementById('excel').value = file.name;
+          document.getElementById('fileName').innerHTML = 'Name: ' + file.name;
+          document.getElementById('fileSize').innerHTML = 'Size: ' + fileSize;
+          document.getElementById('fileType').innerHTML = 'Type: ' + file.type;
+        }
+      }
+      </script>
+<form method="post"  action="/xml">
+    {% raw xsrf_form_html() %}
+        <ul class="fix888">
+            <li><span>文件名</span><input name="excel" id = "excel" type="text" value="" /><input type="file" name="fileToUpload" id="fileToUpload" onchange="fileSelected();"/></li>
+            {%if not isexcel%}
+            <li><span>表格名</span><select name="sheet" >  
+				  <option value ="1">请选择</option>  
+				</select> </li>
+
+			{%else%}
+			<li><span>表格名</span><select name="sheet" >  
+				{%for i in sheets%}
+	         
+				  <option value ="1">{{i}}</option>  
+				  
+				{%end%}  
+				  
+				  
+				</select> </li>
+			{%end%}
+			
+            <li><span>输出文件夹</span><input name="output" type="text" value="" /></li>
+            <li><span>xml文件名</span><input name="xmlname" type="text" value="" /></li>            
+        </ul>
+        <div id="fileName"></div>
+<div id="fileSize"></div>
+<div id="fileType"></div>
+
+            <input type="submit" class="mod" value="提交" />
+
+    {% if errormsg %}
+    <div class="error_p">{{ errormsg }}</div>
+    </form>
+{% end %}
+
+{% end %}

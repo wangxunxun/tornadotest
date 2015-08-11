@@ -5,6 +5,8 @@ import tornado.options
 import os.path
 from app.handlers.userHandler import LoginHandler,RegistHandler,LogoutHandler
 from app.handlers.teamHandler import TeamIndexHandler,TeamNoteamHandler
+from app.handlers.baseHandler import xmlHandler
+from app.handlers.amsHandler import addTeamHandler,addMemberEmailHandler,editMemberTeamHandler
 
 from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
@@ -18,6 +20,10 @@ class Application(tornado.web.Application):
             (r'/logout', LogoutHandler),
             (r"/team/noteam", TeamNoteamHandler),
             (r"/", TeamIndexHandler),
+            (r"/xml", xmlHandler),
+            (r"/addteam", addTeamHandler),
+            (r"/addmember", addMemberEmailHandler),
+            (r"/editmemberteam", editMemberTeamHandler)
         ]
         
         settings = dict(
