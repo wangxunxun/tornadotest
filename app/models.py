@@ -60,6 +60,7 @@ class Team(BaseModel):
     id = Column(Integer, primary_key=True)
     name = Column(CHAR()) 
     members = relationship('Team_member',backref='team', lazy='dynamic')
+    type = Column(Integer, default =1)
     
 
 
@@ -80,18 +81,15 @@ class Team_member(BaseModel):
         return '<Team_member %r>' % self.teamid
 
 if __name__ == '__main__':
-#    drop_db()
-#    init_db()
+    drop_db()
+    init_db()
     email = "59853844@qq.com"
-    m = session.query(Member).filter(Member.email =="59853844@qq.com").scalar()
-    t = session.query(Team).all()
-    for i in t:
-        print(i.name)
-    print(m.email)
-    print(m.teams.all())
-#    team1 = Team(name = "kaifa")
+#    m = session.query(Member).filter(Member.email =="59853844@qq.com").scalar()
+#    t = session.query(Team).all()
+
+    team1 = Team(name = "kaifa")
 #    member1 = Member(email = "5985384433@qq.com",name = "test")
-#    session.add(team1,member1)
+    session.add(team1)
 #    session.add(member1)
 #    user = User(name = "3333",email = "598353844@qq.com")
 #    a=session.query(User).filter(User.email ==  "59853844@qq.com").scalar()

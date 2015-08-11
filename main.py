@@ -5,7 +5,7 @@ import tornado.options
 import os.path
 from app.handlers.userHandler import LoginHandler,RegistHandler,LogoutHandler
 from app.handlers.teamHandler import TeamIndexHandler,TeamNoteamHandler
-from app.handlers.baseHandler import xmlHandler
+from app.handlers.baseHandler import xmlHandler,NoFoundHandler
 from app.handlers.amsHandler import addTeamHandler,addMemberEmailHandler,editMemberTeamHandler
 
 from tornado.options import define, options
@@ -23,7 +23,8 @@ class Application(tornado.web.Application):
             (r"/xml", xmlHandler),
             (r"/addteam", addTeamHandler),
             (r"/addmember", addMemberEmailHandler),
-            (r"/editmemberteam", editMemberTeamHandler)
+            (r"/editmemberteam/(\w+)", editMemberTeamHandler),
+            (r"/404", NoFoundHandler),
         ]
         
         settings = dict(

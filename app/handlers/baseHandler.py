@@ -20,6 +20,10 @@ class BaseHandler(tornado.web.RequestHandler):
         self.session.close()
     def get_current_user(self):
         return self.get_secure_cookie("user")
+    
+class NoFoundHandler(BaseHandler):
+    def get(self):
+        self.render("404.html")
 
 class xmlHandler(BaseHandler):
     def get(self):
