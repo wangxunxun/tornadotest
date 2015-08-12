@@ -6,8 +6,9 @@ import os.path
 from app.handlers.userHandler import LoginHandler,RegistHandler,LogoutHandler
 from app.handlers.teamHandler import TeamIndexHandler,TeamNoteamHandler
 from app.handlers.baseHandler import xmlHandler,NoFoundHandler
-from app.handlers.amsHandler import addTeamHandler,addMemberEmailHandler,editMemberTeamHandler,teamManageHandler,\
-memberManageHandler
+
+from app.handlers.MemberHandlers import *
+from app.handlers.TeamHandlers import *
 
 from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
@@ -24,9 +25,13 @@ class Application(tornado.web.Application):
             (r"/xml", xmlHandler),
             (r"/addteam", addTeamHandler),
             (r"/addmember", addMemberEmailHandler),
-            (r"/editmemberteam/(.*)", editMemberTeamHandler),
+            (r"/addmemberteam/(.*)", addMemberTeamHandler),
             (r"/teammanage", teamManageHandler),
             (r"/membermanage", memberManageHandler),
+            (r"/deleteteam/(.*)", deleteTeamHandler),
+            (r"/deletemember/(.*)", deleteMemberHandler),
+            (r"/editteam/(.*)", editTeamHandler),
+            (r"/editmember/(.*)", editMemberHandler),
             (r"/404", NoFoundHandler),
         ]
         

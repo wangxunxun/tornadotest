@@ -1,14 +1,12 @@
 '''
-Created on 2015年8月11日
+Created on 2015年8月12日
 
-@author: xun
+@author: wangxun
 '''
 from .baseHandler import BaseHandler
 from ..models import User,Team,Member,Team_member
 import tornado.web
 from ..utils import MakeToken
-
-
 
 class deleteMemberHandler(BaseHandler):
     def get(self,get):
