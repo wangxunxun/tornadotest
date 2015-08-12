@@ -6,85 +6,136 @@ Created on 2015年8月11日
 from .baseHandler import BaseHandler
 from ..models import User,Team,Member,Team_member
 import tornado.web
-from ..utils import token 
+from ..utils import MakeToken
 
 class addTeamHandler(BaseHandler):
     def get(self):
         self.render("addteam.html",  bodytitle = "添加小组", error = "")
     def post(self):
         team = self.get_argument("team")
-        if team:
+        type = self.get_argument("type")
+        if not self.session.query(Team).filter(Team.name ==team).all():
+            team1 = Team(name = team,type =type)
+            self.session.add(team1)
+            self.session.commit()
+            self.render("addteam.html",  bodytitle = "添加小组",error = "添加成功")
+        else:
+            self.render("addteam.html",  bodytitle = "添加小组",error = "该小组已添加，不能重复添加")
+
+class teamManageHandler(BaseHandler):
+    def get(self):
+        teams = self.session.query(Team)
+        self.render("teammanage.html",  bodytitle = "小组管理", teams = teams)
+    def post(self):
+        team = self.get_argument("team")
+        if not self.session.query(Team).filter(Team.name ==team).all():
             team1 = Team(name = team)
             self.session.add(team1)
             self.session.commit()
             self.render("addteam.html",  bodytitle = "添加小组",error = "添加成功")
         else:
-            self.render("addteam.html",  bodytitle = "添加小组",error = "请输入小组名")
+            self.render("addteam.html",  bodytitle = "添加小组",error = "该小组已添加，不能重复添加")
+            
+class memberManageHandler(BaseHandler):
+    def get(self):
+        members = self.session.query(Member)
+        
+        self.render("membermanage.html",  bodytitle = "人员管理", members = members)
+    def post(self):
+        team = self.get_argument("team")
+        if not self.session.query(Team).filter(Team.name ==team).all():
+            team1 = Team(name = team)
+            self.session.add(team1)
+            self.session.commit()
+            self.render("addteam.html",  bodytitle = "添加小组",error = "添加成功")
+        else:
+            self.render("addteam.html",  bodytitle = "添加小组",error = "该小组已添加，不能重复添加")
 
 class addMemberEmailHandler(BaseHandler):
+    
     def get(self):
         self.render("addmember_email.html",  bodytitle = "添加成员", error = "")
     def post(self):
+        token = MakeToken.Token()
         email = self.get_argument("email")
         name = self.get_argument("name")
-        if email:
-            if not self.session.query(Member).filter(Member.email==email).scalar():
-                member1 = Member(email = email,name = name)
-                self.session.add(member1)
-                self.session.commit()
-                user = self.session.query(Member).filter(Member.email==email).scalar()  
-                print(user.id)          
-                self.redirect("/editmemberteam/"+str(user.id))
-            else:
-                self.render("addmember_email.html",  bodytitle = "添加成员",error = "该邮箱已注册")
-                            
+
+        
+
+        if not self.session.query(Member).filter(Member.email==email).scalar():
+            member1 = Member(email = email,name = name)
+            self.session.add(member1)
+            self.session.commit()
+            user = self.session.query(Member).filter(Member.email==email).scalar()   
+            newtoken = str(token.generate_newmember_token(user.id,email, name))
+            newtoken = newtoken[2:len(newtoken)-1]       
+            self.redirect("/editmemberteam/"+newtoken)
         else:
-            self.render("addmember_email.html",  bodytitle = "添加成员",error = "请输入邮箱")
+            self.render("addmember_email.html",  bodytitle = "添加成员",error = "该邮箱已注册")
+                            
+
             
 class editMemberTeamHandler(BaseHandler):
     
     def get(self,input):
-
-        userid = int(input)
-        if self.session.query(Member).filter(Member.id ==userid).scalar():
-            teams = self.session.query(Team).all()
-            self.render("addmember_team.html",  bodytitle = "添加小组", error = "",teams = teams)
+        token = MakeToken.Token()
+        data = token.newmember_token(input)        
+        email = data.get("email")
+        name = data.get("name")
+        id = data.get('id')
+        allteams = self.session.query(Team).all()
+        print(self.session.query(Member).filter(Member.id == id).scalar())
+        savedteams = self.session.query(Member).filter(Member.id == id).scalar().teams.all()
+        savedteamsid = []
+        for t in savedteams:
+            savedteamsid.append(t.teamid)             
+        nosavedteam = []
+        for i in allteams:
+            if i.id not in savedteamsid:
+                nosavedteam.append(i)
+              
+        if self.session.query(Member).filter(Member.email ==email).scalar():
+            self.render("addmember_team.html",  savedteams = savedteams,email = email,name = name,
+                        bodytitle = "添加小组", error = "",teams = nosavedteam)
         else:
             self.redirect("/404")
+   
     def post(self,input):
-
-        teams = self.session.query(Team).all()
-        userid = int(input)
-        body = str(self.request.body)
-        print(self.request.body)
-        print(body.split('&'))
-        items = body.split('&')
-        i = 1
-        a = []
-        while i<len(items):
-            print(items[i])
-            if i!=len(items)-1:
-                a.append(items[i][6:len(items[i])])
-            else:
-                a.append(items[i][6:len(items[i])-1])
-            i = i+1
-        print(a)
-
-        chooseteam1 = self.get_argument('teams')
-        chooseteam2 = self.get_argument('teams')
+        token = MakeToken.Token()
+        data = token.newmember_token(input)        
+        email = data.get("email")
+        name = data.get("name")
+        id = data.get('id')
+        allteams = self.session.query(Team).all()
+        savedteams = self.session.query(Member).filter(Member.id == id).scalar().teams.all()
+        savedteamsid = []
+        for t in savedteams:
+            savedteamsid.append(t.teamid)             
+        nosavedteam = []
+        for i in allteams:
+            if i.id not in savedteamsid:
+                nosavedteam.append(i)
         
-        print(chooseteam1)
-        print(chooseteam2)
+        
+                       
+        chooseteams =self.get_arguments("teams")        
+        i = 1
+        teamsid = []
+        for i in chooseteams:
+            que = self.session.query(Team).filter(Team.name ==i).scalar()
+            teamsid.append(que.id)
 
-
-        if chooseteam1:
-            tm = Team_member(teamid =1,memberid = userid)
-            self.session.add(tm)
-            self.session.commit()
-
-
-            self.render("addmember_team.html",  bodytitle = "添加小组",error = "添加成功",teams = teams)
-                            
+        if teamsid:
+            i = 0
+            while i<len(teamsid):
+                tm = Team_member(teamid =teamsid[i],teamname = chooseteams[i],memberid = id,
+                                 memberemail = email)
+                self.session.add(tm)
+                self.session.commit()
+                i = i+1
+            self.redirect("/editmemberteam/"+input)
+                                        
         else:
-            self.render("addmember_team.html",  bodytitle = "添加小组",error = "请选择小组",teams = teams)
+            self.render("addmember_team.html", savedteams = savedteams, bodytitle = "添加小组",email = email,
+                        name = name,error = "请选择小组",teams = nosavedteam)
     

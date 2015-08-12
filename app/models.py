@@ -87,9 +87,9 @@ if __name__ == '__main__':
 #    m = session.query(Member).filter(Member.email =="59853844@qq.com").scalar()
 #    t = session.query(Team).all()
 
-    team1 = Team(name = "kaifa")
+#    team1 = Team(name = "kaifa")
 #    member1 = Member(email = "5985384433@qq.com",name = "test")
-    session.add(team1)
+#    session.add(team1)
 #    session.add(member1)
 #    user = User(name = "3333",email = "598353844@qq.com")
 #    a=session.query(User).filter(User.email ==  "59853844@qq.com").scalar()

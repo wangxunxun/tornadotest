@@ -4,8 +4,8 @@
     <form method="post" onsubmit="return true"  action="">
     {% raw xsrf_form_html() %}
 
-        <div>邮　箱<input name="email" type="text" value="" /></div>
-        <div>姓名<input name="name" type="text" value="" /></div>
+        <div>邮　箱<input name="email" type="text" value="" required/></div>
+        <div>姓名<input name="name" type="text" value="" required/></div>
 
         <div>
             {%if error%}

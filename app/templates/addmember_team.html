@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% block body %}
 <div class="adduser">
+	邮箱:{{email}}
+	<br>
+	姓名{{name}}<br>
+	已添加小组:<br>
+	{%if savedteams%}
+		{%for team in savedteams%}
+			{{team.teamname}}<br>
+		{%end%}
+		<br>
+	{%else%}
+		没有添加任何小组<br><br>
+	{%end%}
+	请添加小组：<br>
     <form method="post" onsubmit="return true"  action="" >
     {% raw xsrf_form_html() %}
         <div class="fix">
@@ -9,7 +22,10 @@
         			
 		            <input name="teams" type="checkbox" value={{i.name}} /><label>{{i.name}} </label> <br>
 		        {%end%}
+		    {%else%}
+		    	你已添加所有小组
 		    {%end%}
+		    
         </div>
             {%if error%}
             	{{error}}

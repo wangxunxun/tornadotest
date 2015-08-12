@@ -6,10 +6,10 @@ Created on 2015年8月11日
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from settings import SECRET_KEY
 class Token:
-    def generate_newmember_token(self,email,name,expiration=3600):
+    def generate_newmember_token(self,id,email,name,expiration=3600):
         SECRET_KEY1 = SECRET_KEY
         s = Serializer(SECRET_KEY1, expiration)
-        return s.dumps({'email':email,'name':name})
+        return s.dumps({'id':id,'email':email,'name':name})
     
     
     def newmember_token(self,token):
@@ -19,13 +19,8 @@ class Token:
             data = s.loads(token)
         except:
             return False
-        result = {}
-        email = data.get('email')
-        name = data.get('name')
-        result.setdefault('email',email)
-        result.setdefault('name',name)
 
-        return result
+        return data
     
 
     def generate_report_token(self,email,name,team,expiration=3600):
