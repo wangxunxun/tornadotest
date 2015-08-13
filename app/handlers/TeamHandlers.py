@@ -5,8 +5,6 @@ Created on 2015年8月12日
 '''
 from .baseHandler import BaseHandler
 from ..models import User,Team,Member,Team_member
-import tornado.web
-from ..utils import MakeToken
 
 class addTeamHandler(BaseHandler):
     def get(self):

@@ -1,0 +1,26 @@
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+	<link href="{{ static_url("css/amscss.css") }}" rel="stylesheet" type="text/css" />  
+	<title>AMS管理平台</title>
+</head> 
+<body>
+<div class="page-header">
+    <h1>Hello, {{data.get('name')}}</h1>
+</div>
+<div>
+    <form method="post" onsubmit="return true"  action="">
+    {% raw xsrf_form_html() %}
+	    今日工作介绍：
+	<div><textarea name = "todaysummary" ></textarea></div>
+	明天计划：
+	<div><textarea name = "tomorrowsummary" ></textarea></div>
+	遇到问题：
+	<div><textarea name = "issue" ></textarea></div><br>
+	<div><input type="submit" value="提交"/></div>
+    </form>
+</div>
+
+
+</body>
+</html>

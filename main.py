@@ -9,6 +9,7 @@ from app.handlers.baseHandler import xmlHandler,NoFoundHandler
 
 from app.handlers.MemberHandlers import *
 from app.handlers.TeamHandlers import *
+from app.handlers.ReportHandlers import *
 
 from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
@@ -32,6 +33,7 @@ class Application(tornado.web.Application):
             (r"/deletejoinedteam/(.*)", deleteJoinedTeamHandler),
             (r"/editteam/(.*)", editTeamHandler),
             (r"/editmember/(.*)", editMemberHandler),
+            (r"/inputreport/(.*)", reportHandler),
             (r"/404", NoFoundHandler),
         ]
         

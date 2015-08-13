@@ -6,8 +6,9 @@ import settings
 
 
 
+sqlpath = 'sqlite:///'+settings.dbsqlitepath
 BaseModel = declarative_base()
-engine = create_engine(settings.dbsqlitepath,echo=False)
+engine = create_engine(sqlpath,echo=False)
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
@@ -40,7 +41,7 @@ class User(BaseModel):
         session.add(self)
         session.commit()
     def __repr__(self):
-        return '<User %r>' % self.name
+        return '<User %r>' % self.email
         
         
 class Member(BaseModel):
@@ -53,7 +54,7 @@ class Member(BaseModel):
 
     
     def __repr__(self):
-        return '<Member %r>' % self.name
+        return '<Member %r>' % self.email
 
 class Team(BaseModel):
     __tablename__ = 'team'
@@ -78,7 +79,23 @@ class Team_member(BaseModel):
 
 
     def __repr__(self):
-        return '<Team_member %r>' % self.teamid
+        return '<Team_member %r>' % self.teamname
+
+class Report(BaseModel):
+    __tablename__ = 'dailyreport'
+    id = Column(Integer, primary_key=True)
+    email = Column(CHAR())
+    name = Column(CHAR())
+    team = Column(CHAR())
+    teamtype = Column(CHAR())
+    today = Column(CHAR()) 
+    tomorrow = Column(CHAR()) 
+    issue = Column(CHAR())
+    currentweek= Column(CHAR()) 
+    nextweek= Column(CHAR()) 
+
+    def __repr__(self):
+        return '<DailyReport %r>' % self.email
 
 if __name__ == '__main__':
     drop_db()
