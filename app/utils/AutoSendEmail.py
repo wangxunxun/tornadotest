@@ -34,30 +34,37 @@ class oprsql:
         i = 0
         members = []
         while i<len(result):
-            
+            memberid = result[i][0]
             email = result[i][1]
             name = result[i][2]
             self.cur.execute('select teamname from teammember where memberemail = "%s"'%email)
-            teams = self.cur.fetchall()
-            if len(teams) ==1:
-                member ={}
-                self.cur.execute('select type from team where name ="%s"'%teams[0][0])
+            teamnames = self.cur.fetchall()
+            self.cur.execute('select teamid from teammember where memberemail = "%s"'%email)
+            teamids = self.cur.fetchall()
+            print(teamids)
+            if len(teamids) ==1:
+                member = {}
+                self.cur.execute('select type from team where id ="%s"'%teamids[0][0])
                 teamtype = self.cur.fetchone()[0]
+                member.setdefault("memberid",memberid)
                 member.setdefault("email",email)
                 member.setdefault("name",name)
-                member.setdefault('team',teams[0][0])   
+                member.setdefault('teamid',teamids[0][0])   
+                member.setdefault('teamname',teamnames[0][0]) 
                 member.setdefault('teamtype',teamtype)             
                 members.append(member)
             else:
                 j = 0
                 
-                while j<len(teams):
+                while j<len(teamids):
                     member ={}
-                    self.cur.execute('select type from team where name ="%s"'%teams[j][0])
+                    self.cur.execute('select type from team where id ="%s"'%teamids[j][0])
                     teamtype = self.cur.fetchone()[0]
+                    member.setdefault("memberid",memberid)
                     member.setdefault("email",email)
                     member.setdefault("name",name)
-                    member.setdefault('team',teams[j][0])   
+                    member.setdefault('teamid',teamids[j][0])  
+                    member.setdefault('teamname',teamnames[0][0])  
                     member.setdefault('teamtype',teamtype)             
                     members.append(member)     
                     j=j+1               
@@ -66,10 +73,10 @@ class oprsql:
     
 class oprtoken:
 
-    def generate_report_token(self,email,name,team, teamtype,expiration=3600):
+    def generate_report_token(self,id,email,name,teamid,team, teamtype,expiration=3600):
         SECRET_KEY = settings.SECRET_KEY
         s = Serializer(SECRET_KEY, expiration)
-        return s.dumps({'email':email,'name':name,'team':team,'teamtype':teamtype})
+        return s.dumps({'memberid':id,'email':email,'name':name,'teamid':teamid,'teamname':team,'teamtype':teamtype})
     
     def edit_report(self,token):
         SECRET_KEY = settings.SECRET_KEY
@@ -115,13 +122,15 @@ class sendmail:
         members = members.getmembers()
         i = 0
         while i<len(members):
+            memberid = members[i].get('memberid')
             email = members[i].get('email')
-            team = members[i].get('team')
+            teamid = members[i].get('teamid')
             name = members[i].get('name')
             teamtype = members[i].get('teamtype')
+            teamname = members[i].get('teamname')
             print(teamtype)
             oprt = oprtoken()
-            token = oprt.generate_report_token(email, name, team,teamtype, 3600)
+            token = oprt.generate_report_token(memberid,email, name, teamid,teamname,teamtype, 3600)
             token = str(token)
             token = token[2:len(token)-1]
             host = settings.host
@@ -129,12 +138,12 @@ class sendmail:
             reporturl ="http://"+host+":"+str(port)+"/inputreport/"+token    
             daycontent = "<h5>Hello "+name+",</h5>\
         <p>您今天的日报链接已经创建，请于今天18:30 前填写提交.</p>\
-        <p>本日报隶属于<strong>"+team+"</strong>小组</p>\
+        <p>本日报隶属于<strong>"+teamname+"</strong>小组</p>\
         <p>链接地址: <a href="+reporturl+">click here</a></p>\
         谢谢"
             weekcontent = "<h5>Hello "+name+",</h5>\
         <p>您今天的周报链接已经创建，请于今天18:30 前填写提交.</p>\
-        <p>本日报隶属于<strong>"+team+"</strong>小组</p>\
+        <p>本日报隶属于<strong>"+teamname+"</strong>小组</p>\
         <p>链接地址: <a href="+reporturl+">click here</a></p>\
         谢谢"
             mailto_list=[email] 

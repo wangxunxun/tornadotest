@@ -1,9 +1,9 @@
-from sqlalchemy import Column, String, create_engine,ForeignKey,Integer,CHAR
+from sqlalchemy import Column, String, create_engine,ForeignKey,Integer,CHAR,DateTime
 from sqlalchemy.orm import sessionmaker,relationship
 from sqlalchemy.ext.declarative import declarative_base
 from werkzeug.security import generate_password_hash, check_password_hash
 import settings
-
+import datetime
 
 
 sqlpath = 'sqlite:///'+settings.dbsqlitepath
@@ -79,23 +79,31 @@ class Team_member(BaseModel):
 
 
     def __repr__(self):
-        return '<Team_member %r>' % self.teamname
+        return '<Team_member %r>' % self.teamid
 
-class Report(BaseModel):
+class WeeklyReport(BaseModel):
+    __tablename__ = 'weeklyreport'
+    id = Column(Integer, primary_key=True)
+    memberid = Column(Integer)
+    teamid = Column(Integer)
+    currentweek= Column(CHAR()) 
+    nextweek= Column(CHAR()) 
+    issue = Column(CHAR())
+    datetime = Column(DateTime,default = datetime.datetime.now())
+    def __repr__(self):
+        return '<DailyReport %r>' % self.id
+
+class DailyReport(BaseModel):
     __tablename__ = 'dailyreport'
     id = Column(Integer, primary_key=True)
-    email = Column(CHAR())
-    name = Column(CHAR())
-    team = Column(CHAR())
-    teamtype = Column(CHAR())
+    memberid = Column(Integer)
+    teamid = Column(Integer)
     today = Column(CHAR()) 
     tomorrow = Column(CHAR()) 
     issue = Column(CHAR())
-    currentweek= Column(CHAR()) 
-    nextweek= Column(CHAR()) 
-
+    datetime = Column(DateTime,default = datetime.datetime.now())
     def __repr__(self):
-        return '<DailyReport %r>' % self.email
+        return '<DailyReport %r>' % self.id
 
 if __name__ == '__main__':
     drop_db()

@@ -5,7 +5,7 @@ import tornado.options
 import os.path
 from app.handlers.userHandler import LoginHandler,RegistHandler,LogoutHandler
 from app.handlers.teamHandler import TeamIndexHandler,TeamNoteamHandler
-from app.handlers.baseHandler import xmlHandler,NoFoundHandler
+from app.handlers.baseHandler import xmlHandler,NoFoundHandler,SuccessHandler
 
 from app.handlers.MemberHandlers import *
 from app.handlers.TeamHandlers import *
@@ -34,6 +34,7 @@ class Application(tornado.web.Application):
             (r"/editteam/(.*)", editTeamHandler),
             (r"/editmember/(.*)", editMemberHandler),
             (r"/inputreport/(.*)", reportHandler),
+            (r"/success", SuccessHandler),
             (r"/404", NoFoundHandler),
         ]
         

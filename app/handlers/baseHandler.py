@@ -24,6 +24,10 @@ class BaseHandler(tornado.web.RequestHandler):
 class NoFoundHandler(BaseHandler):
     def get(self):
         self.render("404.html")
+        
+class SuccessHandler(BaseHandler):
+    def get(self):
+        self.render("success.html")
 
 class xmlHandler(BaseHandler):
     def get(self):

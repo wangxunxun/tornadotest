@@ -40,15 +40,6 @@ class memberManageHandler(BaseHandler):
         members = self.session.query(Member)
         
         self.render("membermanage.html",  bodytitle = "人员管理", members = members)
-    def post(self):
-        team = self.get_argument("team")
-        if not self.session.query(Team).filter(Team.name ==team).all():
-            team1 = Team(name = team)
-            self.session.add(team1)
-            self.session.commit()
-            self.render("addteam.html",  bodytitle = "添加小组",error = "添加成功")
-        else:
-            self.render("addteam.html",  bodytitle = "添加小组",error = "该小组已添加，不能重复添加")
 
 
             
