@@ -26,6 +26,9 @@ class deleteTeamHandler(BaseHandler):
     def get(self,get):
         id =get
         team = self.session.query(Team).filter(Team.id ==id).scalar()
+        joinmembers = team.members.all()
+        for member in joinmembers:
+            self.session.delete(member)
         self.session.delete(team)
         self.session.commit()
         self.redirect("/teammanage")

@@ -29,6 +29,7 @@ class Application(tornado.web.Application):
             (r"/membermanage", memberManageHandler),
             (r"/deleteteam/(.*)", deleteTeamHandler),
             (r"/deletemember/(.*)", deleteMemberHandler),
+            (r"/deletejoinedteam/(.*)", deleteJoinedTeamHandler),
             (r"/editteam/(.*)", editTeamHandler),
             (r"/editmember/(.*)", editMemberHandler),
             (r"/404", NoFoundHandler),

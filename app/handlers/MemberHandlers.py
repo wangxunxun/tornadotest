@@ -7,16 +7,35 @@ from .baseHandler import BaseHandler
 from ..models import User,Team,Member,Team_member
 import tornado.web
 from ..utils import MakeToken
+from app.models import Team_member
 
 class deleteMemberHandler(BaseHandler):
     def get(self,get):
         id =get
         member = self.session.query(Member).filter(Member.id ==id).scalar()
+        jointeams = member.teams.all()
+        for team in jointeams:
+            self.session.delete(team)
+
         self.session.delete(member)
         self.session.commit()
         self.redirect("/membermanage")
 
+class deleteJoinedTeamHandler(BaseHandler):
+    def get(self,get):
+        print(get)
+        data =get.split("!@")
+        print(data)
+        memberid =data[0]
+        teamid = data[1]
+        print(memberid)
+        print(teamid)
+        teammember = self.session.query(Team_member).filter(Team_member.teamid == teamid,Team_member.memberid==memberid).scalar()
+        print(teammember.id)
+        self.session.delete(teammember)
+        self.session.commit()
 
+        self.redirect("/editmember/"+memberid)
             
 class memberManageHandler(BaseHandler):
     def get(self):
@@ -39,7 +58,7 @@ class addMemberHandler(BaseHandler):
     
     def get(self):
         allteams = self.session.query(Team).all()
-        self.render("addmember.html", bodytitle = "添加小组", error = "",teams = allteams)
+        self.render("addmember.html", bodytitle = "添加成员", error = "",teams = allteams)
 
    
     def post(self):
@@ -70,7 +89,7 @@ class addMemberHandler(BaseHandler):
                 self.redirect("/membermanage")
                                             
             else:
-                self.render("addmember.html",  bodytitle = "添加小组",error = "请选择小组",teams = allteams)
+                self.render("addmember.html",  bodytitle = "添加成员",error = "请选择小组",teams = allteams)
         else:
             self.render("addmember.html",  bodytitle = "添加成员",error = "该邮箱已注册",teams = allteams)
 
@@ -95,8 +114,8 @@ class editMemberHandler(BaseHandler):
                 nosavedteam.append(i)
               
         if self.session.query(Member).filter(Member.email ==email).scalar():
-            self.render("editmember.html",  savedteams = savedteams,email = email,name = name,
-                        bodytitle = "添加小组", error = "",teams = nosavedteam)
+            self.render("editmember.html",  savedteams = savedteams,member = member,
+                        bodytitle = "编辑成员", error = "",teams = nosavedteam)
         else:
             self.redirect("/404")
    
@@ -106,14 +125,6 @@ class editMemberHandler(BaseHandler):
         id = input
         member = self.session.query(Member).filter(Member.id == id).scalar()
         email = member.email
-        name = member.name
-        print(name)
-        print(newname)
-        
-#        
-        
-
-
         allteams = self.session.query(Team).all()
         savedteams = self.session.query(Member).filter(Member.id == id).scalar().teams.all()
         savedteamsid = []
@@ -123,16 +134,12 @@ class editMemberHandler(BaseHandler):
         nosavedteam = []
         for i in allteams:
             if i.id not in savedteamsid:
-                nosavedteam.append(i)
-        
-        
-       
+                nosavedteam.append(i)       
         i = 1
         teamsid = []
         for i in chooseteams:
             que = self.session.query(Team).filter(Team.name ==i).scalar()
             teamsid.append(que.id)
-
 
         i = 0
         while i<len(teamsid):
