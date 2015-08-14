@@ -37,12 +37,35 @@ class editTeamHandler(BaseHandler):
         self.render("editteam.html",  bodytitle = "编辑小组", team = team,error = "")
 
     def post(self,input):
-        type = self.get_argument("type")
+        teamname = self.get_argument('teamname')
+        teamtype = self.get_argument("type")
+
+            
         team = self.session.query(Team).filter(Team.id == input).scalar()
-        team.type = type
-        self.session.add(team)
-        self.session.commit()
-        self.redirect("/teammanage")
+        if teamname == team.name:
+            team.type = teamtype
+            team.name = teamname
+            teammembers = self.session.query(Team_member).filter(Team_member.teamid == input).all()
+            for teammember in teammembers:
+                teammember.teamname = teamname
+                self.session.add(teammember)
+            self.session.add(team)
+            self.session.commit()
+            self.redirect("/teammanage")
+
+        elif self.session.query(Team).filter(Team.name == teamname).scalar():
+            self.render("editteam.html",  bodytitle = "编辑小组", team = team,error = "该小组已存在")
+        else:
+            team.type = teamtype
+            team.name = teamname
+            teammembers = self.session.query(Team_member).filter(Team_member.teamid == input).all()
+            for teammember in teammembers:
+                teammember.teamname = teamname
+                self.session.add(teammember)
+            self.session.add(team)
+            self.session.commit()
+            self.redirect("/teammanage")
+                
         
 class teamManageHandler(BaseHandler):
     def get(self):

@@ -59,28 +59,30 @@ class addMemberHandler(BaseHandler):
         for i in chooseteams:
             que = self.session.query(Team).filter(Team.name ==i).scalar()
             teamsid.append(que.id)
-        
-        if not self.session.query(Member).filter(Member.email==email).scalar():
-            member1 = Member(email = email,name = name)
-            self.session.add(member1)
-            self.session.commit()
-            id = self.session.query(Member).filter(Member.email == email).scalar().id
-            if teamsid:
-                i = 0
-                while i<len(teamsid):
-                    tm = Team_member(teamid =teamsid[i],teamname = chooseteams[i],memberid = id,
-                                     memberemail = email)
-                    self.session.add(tm)
-                    i = i+1
-                    
-
+        if allteams:
+            if not self.session.query(Member).filter(Member.email==email).scalar():
+                member1 = Member(email = email,name = name)
+                self.session.add(member1)
                 self.session.commit()
-                self.redirect("/membermanage")
-                                            
+                id = self.session.query(Member).filter(Member.email == email).scalar().id
+                if teamsid:
+                    i = 0
+                    while i<len(teamsid):
+                        tm = Team_member(teamid =teamsid[i],teamname = chooseteams[i],memberid = id,
+                                         memberemail = email)
+                        self.session.add(tm)
+                        i = i+1
+                        
+    
+                    self.session.commit()
+                    self.redirect("/membermanage")
+                                                
+                else:
+                    self.render("addmember.html",  bodytitle = "添加成员",error = "请选择小组",teams = allteams)
             else:
-                self.render("addmember.html",  bodytitle = "添加成员",error = "请选择小组",teams = allteams)
+                self.render("addmember.html",  bodytitle = "添加成员",error = "该邮箱已注册",teams = allteams)
         else:
-            self.render("addmember.html",  bodytitle = "添加成员",error = "该邮箱已注册",teams = allteams)
+            self.render("addmember.html",  bodytitle = "添加成员",error = "请先创建小组",teams = allteams)
 
 
 class editMemberHandler(BaseHandler):

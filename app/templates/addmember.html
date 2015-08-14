@@ -14,6 +14,8 @@
         			
 		            <input name="teams" type="checkbox" value={{i.name}} /><label>{{i.name}} </label> <br>
 		        {%end%}
+		    {%elif len(teams)==0%}
+		    	没有创建任何小组<a href="/addteam">添加小组</a>
 		    {%else%}
 		    	你已添加所有小组
 		    {%end%}

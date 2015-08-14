@@ -49,6 +49,7 @@ class Member(BaseModel):
     id = Column(Integer, primary_key=True)
     email = Column(CHAR(),unique = True)
     name = Column(CHAR()) 
+    datetime = Column(DateTime,default = datetime.datetime.now())
     teams = relationship('Team_member',backref='member', lazy='dynamic')
     
 
@@ -60,9 +61,9 @@ class Team(BaseModel):
     __tablename__ = 'team'
     id = Column(Integer, primary_key=True)
     name = Column(CHAR()) 
-    members = relationship('Team_member',backref='team', lazy='dynamic')
     type = Column(Integer, default =1)
-    
+    datetime = Column(DateTime,default = datetime.datetime.now())
+    members = relationship('Team_member',backref='team', lazy='dynamic')    
 
 
     def __repr__(self):
