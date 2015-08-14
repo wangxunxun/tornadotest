@@ -24,7 +24,9 @@ SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
 host = "localhost"
 port = 8000
 '''
-
+dailyreporttime = '05:45'
+weeklyreportday = 'Friday'
+weeklyreporttime = '05:00' 
 class oprsql:
     def __init__(self,sql):
         self.sql = sql
@@ -95,13 +97,14 @@ class oprtoken:
     
 class sendmail:
     
-    def __init__(self,host,user,pas,sqlite,dailytime = '06:00',weeklytime = "05:00"):
+    def __init__(self,host,user,pas,sqlite,dailytime = '06:00',weeklytime = "05:00",weeklyreportday = 'Friday'):
         self.host = host
         self.user = user
         self.pas = pas
         self.sql =sqlite
         self.dailytime = dailytime
         self.weeklytime = weeklytime
+        self.weeklyreportday = weeklyreportday
         self.schedule = sched.scheduler(time.time, time.sleep) 
     
     def send_mail(self,to_list,sub,content):
@@ -194,7 +197,7 @@ class sendmail:
         while True:
             a=time.localtime()
 
-            if time.strftime("%A",a) =='Friday':
+            if time.strftime("%A",a) ==self.weeklyreportday:
                 if datetime.datetime.now().strftime('%H:%M') == self.weeklytime:
                     self.autoSendWeeklyReport()
                     sleep(85000)
@@ -250,7 +253,8 @@ if __name__ == '__main__':
 #    print(SECRET_KEY)
     mail_host="smtp.163.com"  #设置服务器
     mail_user="beyondsoftbugzilla@163.com"    #用户名
-    mail_pass="wangxun2"   #口令 
+    mail_pass="wangxun2"   #口令
+
     a = sendmail(mail_host,mail_user,mail_pass,settings.dbsqlitepath)
 #    print(dbsqlitepath)
     b =oprsql(settings.dbsqlitepath)

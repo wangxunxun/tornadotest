@@ -110,6 +110,9 @@ if __name__ == '__main__':
     drop_db()
     init_db()
     email = "59853844@qq.com"
+    user=User(name = '王勋',password = "123",email ="59853844@qq.com")
+    session.add(user)
+
 #    m = session.query(Member).filter(Member.email =="59853844@qq.com").scalar()
 #    t = session.query(Team).all()
 

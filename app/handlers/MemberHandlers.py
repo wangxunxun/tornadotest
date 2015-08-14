@@ -5,9 +5,10 @@ Created on 2015年8月12日
 '''
 from .baseHandler import BaseHandler
 from ..models import User,Team,Member,Team_member
-
+import tornado.web
 
 class deleteMemberHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self,get):
         id =get
         member = self.session.query(Member).filter(Member.id ==id).scalar()
@@ -20,6 +21,7 @@ class deleteMemberHandler(BaseHandler):
         self.redirect("/membermanage")
 
 class deleteJoinedTeamHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self,get):
         print(get)
         data =get.split("!@")
@@ -36,20 +38,36 @@ class deleteJoinedTeamHandler(BaseHandler):
         self.redirect("/editmember/"+memberid)
             
 class memberManageHandler(BaseHandler):
+    @tornado.web.authenticated
     def get(self):
         members = self.session.query(Member)
+        dailyteams = self.session.query(Team).filter(Team.type ==1).all()
+        weeklyteams = self.session.query(Team).filter(Team.type ==2).all()
+
+        dailyteamid =[]
+        weeklyteamid =[]
+        for team in dailyteams:
+                dailyteamid.append(team.id)
+        for team in weeklyteams:
+            weeklyteamid.append(team.id)
+
+                
+                
+                
         
-        self.render("membermanage.html",  bodytitle = "人员管理", members = members)
+        self.render("membermanage.html",  bodytitle = "人员管理", members = members,dailyteamid = dailyteamid,
+                    weeklyteamid = weeklyteamid)
 
 
             
 class addMemberHandler(BaseHandler):
-    
+    @tornado.web.authenticated
     def get(self):
         allteams = self.session.query(Team).all()
+
         self.render("addmember.html", bodytitle = "添加成员", error = "",teams = allteams)
 
-   
+    @tornado.web.authenticated
     def post(self):
         email = self.get_argument("email")
         name = self.get_argument("name")
@@ -86,7 +104,7 @@ class addMemberHandler(BaseHandler):
 
 
 class editMemberHandler(BaseHandler):
-    
+    @tornado.web.authenticated
     def get(self,input):
         id = input
         member = self.session.query(Member).filter(Member.id == id).scalar()
@@ -103,13 +121,24 @@ class editMemberHandler(BaseHandler):
         for i in allteams:
             if i.id not in savedteamsid:
                 nosavedteam.append(i)
+                
+        dailyteams = self.session.query(Team).filter(Team.type ==1).all()
+        weeklyteams = self.session.query(Team).filter(Team.type ==2).all()
+
+        dailyteamid =[]
+        weeklyteamid =[]
+        for team in dailyteams:
+                dailyteamid.append(team.id)
+        for team in weeklyteams:
+            weeklyteamid.append(team.id)
               
         if self.session.query(Member).filter(Member.email ==email).scalar():
             self.render("editmember.html",  savedteams = savedteams,member = member,
-                        bodytitle = "编辑成员", error = "",teams = nosavedteam)
+                        bodytitle = "编辑成员", error = "",teams = nosavedteam,dailyteamid = dailyteamid,
+                        weeklyteamid = weeklyteamid)
         else:
             self.redirect("/404")
-   
+    @tornado.web.authenticated
     def post(self,input):
         newname = self.get_argument("username")                  
         chooseteams =self.get_arguments("teams") 

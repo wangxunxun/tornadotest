@@ -4,8 +4,7 @@ import tornado.ioloop
 import tornado.options
 import os.path
 from app.handlers.userHandler import LoginHandler,RegistHandler,LogoutHandler
-from app.handlers.teamHandler import TeamIndexHandler,TeamNoteamHandler
-from app.handlers.baseHandler import xmlHandler,NoFoundHandler,SuccessHandler
+from app.handlers.baseHandler import xmlHandler,NoFoundHandler,SuccessHandler,MainpageHandler
 
 from app.handlers.MemberHandlers import *
 from app.handlers.TeamHandlers import *
@@ -15,6 +14,9 @@ import settings
 from tornado.options import define, options
 import threading
 from pip._vendor.distlib._backport.tarfile import TUREAD
+
+
+
 define("port", default=8000, help="run on the given port", type=int)
 
 class Application(tornado.web.Application):
@@ -24,8 +26,7 @@ class Application(tornado.web.Application):
             (r"/login",LoginHandler),
             (r"/regist",RegistHandler),
             (r'/logout', LogoutHandler),
-            (r"/team/noteam", TeamNoteamHandler),
-            (r"/", TeamIndexHandler),
+            (r"/", MainpageHandler),
             (r"/xml", xmlHandler),
             (r"/addteam", addTeamHandler),
             (r"/addmember", addMemberHandler),
@@ -58,7 +59,8 @@ class Application(tornado.web.Application):
 if __name__ == "__main__":
  
     a = AutoSendEmail.sendmail(settings.mail_host,settings.mail_user,settings.mail_pass,
-                               settings.dbsqlitepath,'11:03','11:03')
+                               settings.dbsqlitepath,settings.dailyreporttime,settings.weeklyreporttime,
+                               settings.weeklyreportday)
 
     t1 =threading.Thread(target=a.dingshiribao)
     t2 =threading.Thread(target=a.dingshizhoubao)

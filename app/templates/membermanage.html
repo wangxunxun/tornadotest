@@ -19,6 +19,11 @@
 		    {%if i.teams.all()%}
 		    	{%for t in i.teams.all()%}
 		    		{{t.teamname}}
+					{%if t.teamid in dailyteamid%}
+						（日报组）<br>
+					{%elif t.teamid in weeklyteamid%}
+						（周报组）<br>
+					{%end%}
 		    	{%end%}
 		    {%end%}
 		    			    

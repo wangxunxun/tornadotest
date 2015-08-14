@@ -12,7 +12,15 @@
         	{%if teams%}
         		{%for i in teams%}
         			
-		            <input name="teams" type="checkbox" value={{i.name}} /><label>{{i.name}} </label> <br>
+		            <input name="teams" type="checkbox" value={{i.name}} /><label>{{i.name}}
+		            {%if i.type ==1%}
+		            	（日报组）
+		            {%elif i.type ==2%}
+		            	（周报组）
+		            {%end%}
+		            
+		            
+		             </label> <br>
 		        {%end%}
 		    {%elif len(teams)==0%}
 		    	没有创建任何小组<a href="/addteam">添加小组</a>
