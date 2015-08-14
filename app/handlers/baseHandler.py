@@ -5,7 +5,6 @@ Created on 2015年8月8日
 '''
 import tornado.web
 from .. import models
-from ..models import User
 import os
 from ..utils import ExportXmlByBeyondsoft
 from win32api import ShellExecute

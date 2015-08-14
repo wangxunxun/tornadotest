@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="addteam">
+        <table border="1">
+		  <tr>
+		    <th>邮箱</th>
+		    <th>姓名</th>
+		    <th>组名</th>
+		    <th>类型</th>
+		    <th>今日总结</th>
+		    <th>明日计划</th>
+		    <th>遇到问题</th>
+		    <th>创建时间</th>
+		  </tr>
+		  {%for i in report%}
+		  <tr>
+		  	<td>{{member.email}}</td>
+		  	<td>{{member.name}}</td>
+		  	<td>{{team.name}}</td>
+		  	<td>{%if team.type ==1%}
+		  			日报
+		  		{%elif team.type ==2%}
+		  			周报
+		  		{%else%}
+		  			未定义
+		  		{%end%}
+		  	
+		  	</td>
+		    <td>{{i.today}}</td>
+		    <td>{{i.tomorrow}}</td>
+		    <td>{{i.issue}}</td>
+		    <td>{{i.datetime}}</td>
+
+		  {%end%}
+
+
+		</table>
+
+</div>
+{%end%}

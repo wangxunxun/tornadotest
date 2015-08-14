@@ -3,17 +3,17 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import os.path
-from app.handlers.userHandler import LoginHandler,RegistHandler,LogoutHandler
+from app.handlers.userHandler import LoginHandler,LogoutHandler,RegistHandler
 from app.handlers.baseHandler import xmlHandler,NoFoundHandler,SuccessHandler,MainpageHandler
 
-from app.handlers.MemberHandlers import *
-from app.handlers.TeamHandlers import *
-from app.handlers.ReportHandlers import *
+from app.handlers.MemberHandlers import addMemberHandler,deleteJoinedTeamHandler,deleteMemberHandler,\
+editMemberHandler,memberManageHandler
+from app.handlers.TeamHandlers import addTeamHandler,deleteTeamHandler,editTeamHandler,teamManageHandler
+from app.handlers.ReportHandlers import inputReportHandler,viewReportHandler
 from app.utils import AutoSendEmail
 import settings
 from tornado.options import define, options
 import threading
-from pip._vendor.distlib._backport.tarfile import TUREAD
 
 
 
@@ -37,7 +37,8 @@ class Application(tornado.web.Application):
             (r"/deletejoinedteam/(.*)", deleteJoinedTeamHandler),
             (r"/editteam/(.*)", editTeamHandler),
             (r"/editmember/(.*)", editMemberHandler),
-            (r"/inputreport/(.*)", reportHandler),
+            (r"/inputreport/(.*)", inputReportHandler),
+            (r"/viewreport/(.*)", viewReportHandler),
             (r"/success", SuccessHandler),
             (r"/404", NoFoundHandler),
         ]

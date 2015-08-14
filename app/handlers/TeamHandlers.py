@@ -6,6 +6,7 @@ Created on 2015年8月12日
 from .baseHandler import BaseHandler
 from ..models import User,Team,Member,Team_member
 import tornado.web
+
 class addTeamHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):

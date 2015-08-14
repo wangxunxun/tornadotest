@@ -6,7 +6,7 @@ Created on 2015年8月13日
 from .baseHandler import BaseHandler
 from ..models import User,Team,Member,Team_member,DailyReport,WeeklyReport
 from ..utils import MakeToken
-class reportHandler(BaseHandler):
+class inputReportHandler(BaseHandler):
     def get(self,input):
         token = MakeToken.Token()
         data = token.load_token(input)
@@ -44,3 +44,20 @@ class reportHandler(BaseHandler):
             self.session.commit()
             self.redirect('/success')
             
+class viewReportHandler(BaseHandler):
+    def get(self,input):
+        data = input
+        data = data.split('!@')
+        memberid = data[0]
+        teamid = data[1]
+        teamtype = data[2]
+        member = self.session.query(Member).filter(Member.id ==memberid).scalar()
+        team = self.session.query(Team).filter(Team.id == teamid).scalar()
+        print(team)
+        if teamtype =='1':
+            report = self.session.query(DailyReport).filter(DailyReport.memberid==memberid,DailyReport.teamid==teamid).all()
+            self.render('viewdailyreport.html',bodytitle = "查看日报",member = member,team = team,report = report)
+
+        if teamtype =='2':
+            report = self.session.query(WeeklyReport).filter(WeeklyReport.memberid==memberid,WeeklyReport.teamid==teamid).all()
+            self.render('viewweeklyreport.html',bodytitle = "查看周报",member = member,team = team,report = report)

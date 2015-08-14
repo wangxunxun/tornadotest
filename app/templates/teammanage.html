@@ -7,6 +7,7 @@
 		    <th>id</th>
 		    <th>名称</th>
 		    <th>类型</th>
+		    <th>成员</th>
 		    <th>操作</th>
 		  </tr>
 		  {%for i in teams%}
@@ -20,6 +21,11 @@
 		    	周报组
 		    {%end%}
 		    
+		    <td>
+		    {%for m in i.members.all()%}
+		    	{{m.memberemail}} <a href="/viewreport/{{m.memberid}}!@{{m.teamid}}!@{{i.type}}">查看</a><br>
+		    {%end%}
+		    </td>
 		    
 		    
 		    
