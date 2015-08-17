@@ -262,8 +262,9 @@ if __name__ == '__main__':
 #    print(dbsqlitepath)
     b =oprsql(settings.dbsqlitepath)
     a.autoSendWeeklyReport()
+    a.autoSendDailyReport()
 
-    print(b.getmembers())
+#    print(b.getmembers())
 #    t =threading.Thread(target=a.dingshi)
 #    t.start()
 #    a.autosend()
