@@ -12,24 +12,24 @@
 		  </tr>
 		  {%for i in members%}
 		  <tr>
-		    <td>{{i.id}}</td>
-		    <td>{{i.email}}</td>
-		    <td>{{i.name}}</td>
+		    <td>{{i.get('id')}}</td>
+		    <td>{{i.get('email')}}</td>
+		    <td>{{i.get('name')}}</td>
 		    <td>
-		    {%if i.teams.all()%}
-		    	{%for t in i.teams.all()%}
-		    		{{t.teamname}}
-					{%if t.teamid in dailyteamid%}
-						（日报组）<br>
-					{%elif t.teamid in weeklyteamid%}
-						（周报组）<br>
-					{%end%}
-		    	{%end%}
-		    {%end%}
+
+	    	{%for t in i.get('teams')%}
+	    		{{t.get('name')}}
+				{%if t.get('type') ==1%}
+					（日报组）<br>
+				{%elif t.get('type') ==2%}
+					（周报组）<br>
+				{%end%}
+	    	{%end%}
+
 		    			    
 		    </td>
-		    <td><a href="/deletemember/{{i.id}}">删除</a>
-		    <a href="/editmember/{{i.id}}">编辑</a>
+		    <td><a href="/deletemember/{{i.get('id')}}">删除</a>
+		    <a href="/editmember/{{i.get('id')}}">编辑</a>
 		    </td>
 		  </tr>
 		  {%end%}

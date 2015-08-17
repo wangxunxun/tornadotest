@@ -13,7 +13,7 @@ class inputReportHandler(BaseHandler):
         teamtype = data.get('teamtype')
         if teamtype == 1:
             self.render('dailyreport.html',bodytitle = "日报填写",data = data)
-        else:
+        elif teamtype == 2:
             self.render('weeklyreport.html',bodytitle = "周报填写",data = data)
             
     def post(self,input):
@@ -35,7 +35,7 @@ class inputReportHandler(BaseHandler):
             self.session.add(dailyreport)
             self.session.commit()
             self.redirect('/success')
-        else:
+        elif teamtype == 2:
             currentweek = self.get_argument("currentweek")
             nextweek = self.get_argument("nextweek")
             issue = self.get_argument("issue")
@@ -53,7 +53,6 @@ class viewReportHandler(BaseHandler):
         teamtype = data[2]
         member = self.session.query(Member).filter(Member.id ==memberid).scalar()
         team = self.session.query(Team).filter(Team.id == teamid).scalar()
-        print(team)
         if teamtype =='1':
             report = self.session.query(DailyReport).filter(DailyReport.memberid==memberid,DailyReport.teamid==teamid).all()
             self.render('viewdailyreport.html',bodytitle = "查看日报",member = member,team = team,report = report)

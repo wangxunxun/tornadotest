@@ -44,10 +44,13 @@ class oprsql:
             memberid = result[i][0]
             email = result[i][1]
             name = result[i][2]
-            self.cur.execute('select teamname from teammember where memberemail = "%s"'%email)
-            teamnames = self.cur.fetchall()
-            self.cur.execute('select teamid from teammember where memberemail = "%s"'%email)
+            self.cur.execute('select teamid from teammember where memberid = "%s"'%memberid)
             teamids = self.cur.fetchall()
+            teamnames = []
+            for teamid in teamids:
+                self.cur.execute('select name from team where id ="%s"' %teamid)
+                teamname = self.cur.fetchone()
+                teamnames.append(teamname)
             if len(teamids) ==1:
                 member = {}
                 self.cur.execute('select type from team where id ="%s"'%teamids[0][0])
@@ -260,7 +263,7 @@ if __name__ == '__main__':
     b =oprsql(settings.dbsqlitepath)
     a.autoSendWeeklyReport()
 
-#    print(b.getmembers())
+    print(b.getmembers())
 #    t =threading.Thread(target=a.dingshi)
 #    t.start()
 #    a.autosend()

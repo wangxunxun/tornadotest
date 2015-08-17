@@ -50,10 +50,6 @@ class editTeamHandler(BaseHandler):
         if teamname == team.name:
             team.type = teamtype
             team.name = teamname
-            teammembers = self.session.query(Team_member).filter(Team_member.teamid == input).all()
-            for teammember in teammembers:
-                teammember.teamname = teamname
-                self.session.add(teammember)
             self.session.add(team)
             self.session.commit()
             self.redirect("/teammanage")
@@ -63,10 +59,6 @@ class editTeamHandler(BaseHandler):
         else:
             team.type = teamtype
             team.name = teamname
-            teammembers = self.session.query(Team_member).filter(Team_member.teamid == input).all()
-            for teammember in teammembers:
-                teammember.teamname = teamname
-                self.session.add(teammember)
             self.session.add(team)
             self.session.commit()
             self.redirect("/teammanage")
@@ -76,14 +68,21 @@ class teamManageHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         teams = self.session.query(Team)
-        self.render("teammanage.html",  bodytitle = "小组管理", teams = teams)
-    @tornado.web.authenticated
-    def post(self):
-        team = self.get_argument("team")
-        if not self.session.query(Team).filter(Team.name ==team).all():
-            team1 = Team(name = team)
-            self.session.add(team1)
-            self.session.commit()
-            self.render("addteam.html",  bodytitle = "添加小组",error = "添加成功")
-        else:
-            self.render("addteam.html",  bodytitle = "添加小组",error = "该小组已添加，不能重复添加")
+        teamdata = []
+        for team in teams:
+            teaminfo = {}
+            teaminfo.setdefault('id',team.id)
+            teaminfo.setdefault('name',team.name)
+            teaminfo.setdefault('type',team.type)
+            teammembers = []
+            for member in team.members:
+                meminfo = {}
+                mem = self.session.query(Member).filter(Member.id == member.memberid).scalar()
+                meminfo.setdefault('id',mem.id)
+                meminfo.setdefault('email',mem.email)
+                meminfo.setdefault('name',mem.name)                
+                teammembers.append(meminfo)
+            teaminfo.setdefault('members',teammembers)
+            teamdata.append(teaminfo)
+                                      
+        self.render("teammanage.html",  bodytitle = "小组管理", teams = teamdata)

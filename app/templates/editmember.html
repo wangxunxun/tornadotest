@@ -1,24 +1,24 @@
 {% extends "base.html" %}
 {% block body %}
 <div class="adduser">
-	邮箱:{{member.email}}
+	邮箱:{{member.get('email')}}
 	<br>
 	
 
 	
     <form method="post" onsubmit="return true"  action="" >
     {% raw xsrf_form_html() %}
-    	姓名:<input name="username" type="text" value="{{member.name}}" /><br>
+    	姓名:<input name="username" type="text" value="{{member.get('name')}}" /><br>
 		已添加小组:<br>
-			{%if savedteams%}
-				{%for team in savedteams%}
-					{{team.teamname}}
-					{%if team.teamid in dailyteamid%}
+			{%if member.get('teams')%}
+				{%for team in member.get('teams')%}
+					{{team.get('name')}}
+					{%if team.get('type') ==1%}
 						（日报组）
-					{%elif team.teamid in weeklyteamid%}
+					{%elif team.get('type') ==2%}
 						（周报组）
 					{%end%}
-					<a href="/deletejoinedteam/{{member.id}}!@{{team.teamid}}">删除</a><br>
+					<a href="/deletejoinedteam/{{member.get('id')}}!@{{team.get('id')}}">删除</a><br>
 				{%end%}
 				<br>
 			{%else%}

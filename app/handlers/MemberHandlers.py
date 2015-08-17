@@ -15,7 +15,6 @@ class deleteMemberHandler(BaseHandler):
         jointeams = member.teams.all()
         for team in jointeams:
             self.session.delete(team)
-
         self.session.delete(member)
         self.session.commit()
         self.redirect("/membermanage")
@@ -23,40 +22,35 @@ class deleteMemberHandler(BaseHandler):
 class deleteJoinedTeamHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self,get):
-        print(get)
         data =get.split("!@")
-        print(data)
         memberid =data[0]
         teamid = data[1]
-        print(memberid)
-        print(teamid)
         teammember = self.session.query(Team_member).filter(Team_member.teamid == teamid,Team_member.memberid==memberid).scalar()
-        print(teammember.id)
         self.session.delete(teammember)
         self.session.commit()
-
         self.redirect("/editmember/"+memberid)
             
 class memberManageHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self):
         members = self.session.query(Member)
-        dailyteams = self.session.query(Team).filter(Team.type ==1).all()
-        weeklyteams = self.session.query(Team).filter(Team.type ==2).all()
-
-        dailyteamid =[]
-        weeklyteamid =[]
-        for team in dailyteams:
-                dailyteamid.append(team.id)
-        for team in weeklyteams:
-            weeklyteamid.append(team.id)
-
-                
-                
-                
-        
-        self.render("membermanage.html",  bodytitle = "人员管理", members = members,dailyteamid = dailyteamid,
-                    weeklyteamid = weeklyteamid)
+        membersdata = []        
+        for member in members:
+            memberinfo = {}
+            memberinfo.setdefault('id',member.id)
+            memberinfo.setdefault('email',member.email)
+            memberinfo.setdefault('name',member.name)
+            teams = []
+            for team in member.teams:
+                data = self.session.query(Team).filter(Team.id == team.teamid).scalar()
+                teaminfo = {}
+                teaminfo.setdefault('id',data.id)
+                teaminfo.setdefault('type',data.type)
+                teaminfo.setdefault('name',data.name)
+                teams.append(teaminfo)
+            memberinfo.setdefault('teams',teams)
+            membersdata.append(memberinfo)      
+        self.render("membermanage.html",  bodytitle = "人员管理", members = membersdata)
 
 
             
@@ -86,8 +80,7 @@ class addMemberHandler(BaseHandler):
                 if teamsid:
                     i = 0
                     while i<len(teamsid):
-                        tm = Team_member(teamid =teamsid[i],teamname = chooseteams[i],memberid = id,
-                                         memberemail = email)
+                        tm = Team_member(teamid =teamsid[i],memberid = id)
                         self.session.add(tm)
                         i = i+1
                         
@@ -108,11 +101,22 @@ class editMemberHandler(BaseHandler):
     def get(self,input):
         id = input
         member = self.session.query(Member).filter(Member.id == id).scalar()
-        email = member.email
-        name = member.name
+        memberinfo = {}
+        memberinfo.setdefault('email',member.email)
+        memberinfo.setdefault('name',member.name)
+        memberinfo.setdefault('id',member.id)
+        teams = []
+        for team in member.teams:
+            teaminfo = {}
+            data = self.session.query(Team).filter(Team.id == team.teamid).scalar()
+            teaminfo.setdefault('id',data.id)
+            teaminfo.setdefault('type',data.type)
+            teaminfo.setdefault('name',data.name)
+            teams.append(teaminfo)
+        memberinfo.setdefault('teams',teams)
 
         allteams = self.session.query(Team).all()
-        print(self.session.query(Member).filter(Member.id == id).scalar())
+
         savedteams = self.session.query(Member).filter(Member.id == id).scalar().teams.all()
         savedteamsid = []
         for t in savedteams:
@@ -121,50 +125,22 @@ class editMemberHandler(BaseHandler):
         for i in allteams:
             if i.id not in savedteamsid:
                 nosavedteam.append(i)
-                
-        dailyteams = self.session.query(Team).filter(Team.type ==1).all()
-        weeklyteams = self.session.query(Team).filter(Team.type ==2).all()
 
-        dailyteamid =[]
-        weeklyteamid =[]
-        for team in dailyteams:
-                dailyteamid.append(team.id)
-        for team in weeklyteams:
-            weeklyteamid.append(team.id)
-              
-        if self.session.query(Member).filter(Member.email ==email).scalar():
-            self.render("editmember.html",  savedteams = savedteams,member = member,
-                        bodytitle = "编辑成员", error = "",teams = nosavedteam,dailyteamid = dailyteamid,
-                        weeklyteamid = weeklyteamid)
-        else:
-            self.redirect("/404")
+        self.render("editmember.html",  member = memberinfo,bodytitle = "编辑成员", error = "",teams = nosavedteam)
+
     @tornado.web.authenticated
     def post(self,input):
         newname = self.get_argument("username")                  
         chooseteams =self.get_arguments("teams") 
         id = input
         member = self.session.query(Member).filter(Member.id == id).scalar()
-        email = member.email
-        allteams = self.session.query(Team).all()
-        savedteams = self.session.query(Member).filter(Member.id == id).scalar().teams.all()
-        savedteamsid = []
-
-        for t in savedteams:
-            savedteamsid.append(t.teamid)             
-        nosavedteam = []
-        for i in allteams:
-            if i.id not in savedteamsid:
-                nosavedteam.append(i)       
-        i = 1
         teamsid = []
         for i in chooseteams:
             que = self.session.query(Team).filter(Team.name ==i).scalar()
             teamsid.append(que.id)
-
         i = 0
         while i<len(teamsid):
-            tm = Team_member(teamid =teamsid[i],teamname = chooseteams[i],memberid = id,
-                             memberemail = email)
+            tm = Team_member(teamid =teamsid[i],memberid = id)
             self.session.add(tm)
 
             i = i+1

@@ -73,9 +73,7 @@ class Team_member(BaseModel):
     __tablename__ = 'teammember'
     id = Column(Integer, primary_key=True)
     teamid = Column(Integer, ForeignKey('team.id'))
-    teamname = Column(CHAR()) 
     memberid = Column(Integer, ForeignKey('member.id'))
-    memberemail = Column(CHAR()) 
     
 
 
