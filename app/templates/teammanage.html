@@ -14,24 +14,31 @@
 		  <tr>
 		    <td>{{i.get('id')}}</td>
 		    <td>{{i.get('name')}}</td>
-		    <td>
+		    
 		    {%if i.get('type')==1%}
-		    	日报组
+		    	<td>日报组</td>
+		    	<td>
+			    {%for m in i.get('members')%}
+			    	{{m.get('name')}}({{m.get('email')}}) <a href="/viewreport/{{m.get('id')}}!@{{i.get('id')}}!@{{i.get('type')}}">查看日报</a><br>
+			    {%end%}
+			    </td>
+		    </td>
 		    {%else%}
-		    	周报组
+		    	<td>周报组</td>
+			    <td>
+			    {%for m in i.get('members')%}
+			    	{{m.get('name')}}({{m.get('email')}}) <a href="/viewreport/{{m.get('id')}}!@{{i.get('id')}}!@{{i.get('type')}}">查看周报</a><br>
+			    {%end%}
+			    </td>
 		    {%end%}
 		    
-		    <td>
-		    {%for m in i.get('members')%}
-		    	{{m.get('name')}} <a href="/viewreport/{{m.get('id')}}!@{{i.get('id')}}!@{{i.get('type')}}">查看</a><br>
-		    {%end%}
-		    </td>
+
 		    
 		    
 		    
 		    
 		    
-		    </td>
+
 		    <td><a href="/deleteteam/{{i.get('id')}}">删除</a>
 		    <a href="/editteam/{{i.get('id')}}">编辑</a>
 		    </td>

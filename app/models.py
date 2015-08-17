@@ -90,7 +90,7 @@ class WeeklyReport(BaseModel):
     issue = Column(CHAR())
     datetime = Column(DateTime,default = datetime.datetime.now())
     def __repr__(self):
-        return '<DailyReport %r>' % self.id
+        return '<WeeklyReport %r>' % self.id
 
 class DailyReport(BaseModel):
     __tablename__ = 'dailyreport'
