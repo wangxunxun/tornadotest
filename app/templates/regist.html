@@ -1,20 +1,20 @@
-{% extends "main.html" %}
-
-{% block body %}
-
-{% if not regist %}
-<div class="header">
-    <div class="backbtn"><a href="/login"><img src="{{ static_url("images/backbtn.gif") }}"></a></div>
-    <div class="logo"><img src="{{ static_url("images/logo2.gif") }}"></div>
-</div>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
+	<link href="{{ static_url("css/amscss.css") }}" rel="stylesheet" type="text/css" />  
+	<title>AMS管理平台</title>
+</head>
+<div class="top"><p>AMS管理平台</p>
+<div class="top"><a href='/login'>登陆</a>
+<body>
 <div class="regist">
-    <form method="post" onsubmit="return true"  action="/regist">
+<form method="post" onsubmit="return true"  action="/regist">
     {% raw xsrf_form_html() %}
         <ul>
-            <li><span>邮　箱</span><input name="email" required="required" type="text" value="请输入邮箱"  /></li>
-            <li><span>用户名</span><input name="username" required="required" type="text" value="请输入用户名" /></li>
-            <li><span>密　码</span><input name="password" required="required" type="password" value="请输入登陆密码" /></li>
-            <li><span>确认密码</span><input name="password_t" required="required" type="password" value="请输入登陆密码" /></li>
+            <li><span>邮　箱</span><input name="email" required="required" type="text" value=""  /></li>
+            <li><span>用户名</span><input name="username" required="required" type="text" value="" /></li>
+            <li><span>密　码</span><input name="password" required="required" type="password" value="" /></li>
+            <li><span>确认密码</span><input name="password_t" required="required" type="password" value="" /></li>
         </ul>
         {% if errormsg %}
     <div class="error_p">{{ errormsg }}</div>
@@ -25,16 +25,5 @@
     </form>
 </div>
 
-{% else %}
-
-<div class="header">
-    <div class="logo"><img src="{{ static_url("images/logo2.gif") }}"></div>
-</div>
-<div class="success">
-    <h3><span>{{ username }}，</span>您已注册成功！</h3> 
-    <div class="btn"><a class="modbtn1" href="/">进入使用</a></div>
-</div>
-
-{% end %}
-
-{% end %}
+    </body>
+</html>

@@ -22,7 +22,7 @@ class LoginHandler(BaseHandler):
         if user:
             if user.verify_password(password):
                 self.set_secure_cookie("user", email)
-                self.redirect("/")
+                self.redirect("/teammanage")
             else:
                 self.render("login.html", errormessage = "密码错误")
                 
@@ -33,8 +33,7 @@ class LoginHandler(BaseHandler):
 class RegistHandler(BaseHandler):
     def get(self):
         self.set_secure_cookie("user", "")
-        self.render("regist.html",
-                     regist=False, errormsg="")
+        self.render("regist.html",errormsg="")
 
     def post(self):
         email = self.get_argument("email")
@@ -42,15 +41,15 @@ class RegistHandler(BaseHandler):
         password = self.get_argument("password")
         password_t = self.get_argument("password_t")
         if password !=password_t:
-            self.render("regist.html", regist=False, errormsg="确认密码和密码不一致")
+            self.render("regist.html",errormsg="确认密码和密码不一致")
         elif self.session.query(User).filter(User.email == email).scalar():
-            self.render("regist.html", regist=False, errormsg="该邮箱已注册")
+            self.render("regist.html", errormsg="该邮箱已注册")
         else:
             self.set_secure_cookie("user", email)
             user=User(name = username,password = password,email =email)
             self.session.add(user)
             self.session.commit()
-            self.render("regist.html",regist=True, username=username, errormsg="")
+            self.redirect("/login")
 
 class LogoutHandler(BaseHandler):
     def get(self):

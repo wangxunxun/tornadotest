@@ -3,15 +3,20 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import os.path
-from app.handlers.userHandler import LoginHandler,RegistHandler,LogoutHandler
-from app.handlers.teamHandler import TeamIndexHandler,TeamNoteamHandler
-from app.handlers.baseHandler import xmlHandler,NoFoundHandler,SuccessHandler
+from app.handlers.userHandler import LoginHandler,LogoutHandler,RegistHandler
+from app.handlers.baseHandler import xmlHandler,NoFoundHandler,SuccessHandler,MainpageHandler
 
-from app.handlers.MemberHandlers import *
-from app.handlers.TeamHandlers import *
-from app.handlers.ReportHandlers import *
-
+from app.handlers.MemberHandlers import addMemberHandler,deleteJoinedTeamHandler,deleteMemberHandler,\
+editMemberHandler,memberManageHandler
+from app.handlers.TeamHandlers import addTeamHandler,deleteTeamHandler,editTeamHandler,teamManageHandler
+from app.handlers.ReportHandlers import inputReportHandler,viewReportHandler
+from app.utils import AutoSendEmail
+import settings
 from tornado.options import define, options
+import threading
+
+
+
 define("port", default=8000, help="run on the given port", type=int)
 
 class Application(tornado.web.Application):
@@ -21,8 +26,7 @@ class Application(tornado.web.Application):
             (r"/login",LoginHandler),
             (r"/regist",RegistHandler),
             (r'/logout', LogoutHandler),
-            (r"/team/noteam", TeamNoteamHandler),
-            (r"/", TeamIndexHandler),
+            (r"/", MainpageHandler),
             (r"/xml", xmlHandler),
             (r"/addteam", addTeamHandler),
             (r"/addmember", addMemberHandler),
@@ -33,7 +37,8 @@ class Application(tornado.web.Application):
             (r"/deletejoinedteam/(.*)", deleteJoinedTeamHandler),
             (r"/editteam/(.*)", editTeamHandler),
             (r"/editmember/(.*)", editMemberHandler),
-            (r"/inputreport/(.*)", reportHandler),
+            (r"/inputreport/(.*)", inputReportHandler),
+            (r"/viewreport/(.*)", viewReportHandler),
             (r"/success", SuccessHandler),
             (r"/404", NoFoundHandler),
         ]
@@ -53,6 +58,17 @@ class Application(tornado.web.Application):
 
 
 if __name__ == "__main__":
+ 
+    a = AutoSendEmail.sendmail(settings.mail_host,settings.mail_user,settings.mail_pass,
+                               settings.dbsqlitepath,settings.dailyreporttime,settings.weeklyreporttime,
+                               settings.weeklyreportday)
+
+    t1 =threading.Thread(target=a.dingshiribao)
+    t2 =threading.Thread(target=a.dingshizhoubao)
+    t1.setDaemon(True)
+    t2.setDaemon(True)
+    t1.start()
+    t2.start()
     tornado.options.parse_command_line()
     http_server = tornado.httpserver.HTTPServer(Application())
     http_server.listen(options.port)

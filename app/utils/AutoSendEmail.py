@@ -14,12 +14,19 @@ import datetime
 import time, os, sched 
 import random,threading,time
 from queue import Queue
-from settings import SECRET_KEY,host,port,dbsqlitepath
 import settings
-
+import time
     
-
-
+'''
+currentpath = os.path.dirname(__file__).replace("\\","/")
+dbsqlitepath = currentpath+'/data.sqlite'
+SECRET_KEY = os.environ.get('SECRET_KEY') or 'hard to guess string'
+host = "localhost"
+port = 8000
+'''
+dailyreporttime = '05:45'
+weeklyreportday = 'Friday'
+weeklyreporttime = '05:00' 
 class oprsql:
     def __init__(self,sql):
         self.sql = sql
@@ -37,11 +44,13 @@ class oprsql:
             memberid = result[i][0]
             email = result[i][1]
             name = result[i][2]
-            self.cur.execute('select teamname from teammember where memberemail = "%s"'%email)
-            teamnames = self.cur.fetchall()
-            self.cur.execute('select teamid from teammember where memberemail = "%s"'%email)
+            self.cur.execute('select teamid from teammember where memberid = "%s"'%memberid)
             teamids = self.cur.fetchall()
-            print(teamids)
+            teamnames = []
+            for teamid in teamids:
+                self.cur.execute('select name from team where id ="%s"' %teamid)
+                teamname = self.cur.fetchone()
+                teamnames.append(teamname)
             if len(teamids) ==1:
                 member = {}
                 self.cur.execute('select type from team where id ="%s"'%teamids[0][0])
@@ -64,11 +73,12 @@ class oprsql:
                     member.setdefault("email",email)
                     member.setdefault("name",name)
                     member.setdefault('teamid',teamids[j][0])  
-                    member.setdefault('teamname',teamnames[0][0])  
+                    member.setdefault('teamname',teamnames[j][0])  
                     member.setdefault('teamtype',teamtype)             
                     members.append(member)     
                     j=j+1               
             i =i +1
+        print(members)
         return members
     
 class oprtoken:
@@ -90,15 +100,15 @@ class oprtoken:
     
 class sendmail:
     
-    def __init__(self,host,user,pas,sqlite):
+    def __init__(self,host,user,pas,sqlite,dailytime = '06:00',weeklytime = "05:00",weeklyreportday = 'Friday'):
         self.host = host
         self.user = user
         self.pas = pas
         self.sql =sqlite
+        self.dailytime = dailytime
+        self.weeklytime = weeklytime
+        self.weeklyreportday = weeklyreportday
         self.schedule = sched.scheduler(time.time, time.sleep) 
-
-        
-
     
     def send_mail(self,to_list,sub,content):
         me="beyondsoft.ams"+" <"+self.user+">"   #这里的hello可以任意设置，收到信后，将按照设置显示
@@ -117,7 +127,37 @@ class sendmail:
             print(e)
             return False  
         
-    def autosend(self):
+    def autoSendDailyReport(self):
+        members = oprsql(self.sql)
+        members = members.getmembers()
+        i = 0
+        while i<len(members):
+            memberid = members[i].get('memberid')
+            email = members[i].get('email')
+            teamid = members[i].get('teamid')
+            name = members[i].get('name')
+            teamtype = members[i].get('teamtype')
+            teamname = members[i].get('teamname')           
+            if teamtype==1:
+                oprt = oprtoken()
+                token = oprt.generate_report_token(memberid,email, name, teamid,teamname,teamtype, 3600)
+                token = str(token)
+                token = token[2:len(token)-1]
+                host = settings.host
+                port = settings.port
+                reporturl ="http://"+host+":"+str(port)+"/inputreport/"+token    
+                daycontent = "<h5>Hello "+name+",</h5>\
+            <p>您今天的日报链接已经创建，请于今天18:30 前填写提交.</p>\
+            <p>本日报隶属于<strong>"+teamname+"</strong>小组</p>\
+            <p>链接地址: <a href="+reporturl+">click here</a></p>\
+            谢谢"
+                mailto_list=[email] 
+                if self.send_mail(mailto_list,teamname+"小组-日报创建提醒 ",daycontent):  
+                    print("发送成功")  
+                else:  
+                    print("发送失败")  
+            i =i+1 
+    def autoSendWeeklyReport(self):
         members = oprsql(self.sql)
         members = members.getmembers()
         i = 0
@@ -128,45 +168,46 @@ class sendmail:
             name = members[i].get('name')
             teamtype = members[i].get('teamtype')
             teamname = members[i].get('teamname')
-            print(teamtype)
-            oprt = oprtoken()
-            token = oprt.generate_report_token(memberid,email, name, teamid,teamname,teamtype, 3600)
-            token = str(token)
-            token = token[2:len(token)-1]
-            host = settings.host
-            port = settings.port
-            reporturl ="http://"+host+":"+str(port)+"/inputreport/"+token    
-            daycontent = "<h5>Hello "+name+",</h5>\
-        <p>您今天的日报链接已经创建，请于今天18:30 前填写提交.</p>\
-        <p>本日报隶属于<strong>"+teamname+"</strong>小组</p>\
-        <p>链接地址: <a href="+reporturl+">click here</a></p>\
-        谢谢"
-            weekcontent = "<h5>Hello "+name+",</h5>\
-        <p>您今天的周报链接已经创建，请于今天18:30 前填写提交.</p>\
-        <p>本日报隶属于<strong>"+teamname+"</strong>小组</p>\
-        <p>链接地址: <a href="+reporturl+">click here</a></p>\
-        谢谢"
-            mailto_list=[email] 
-            if teamtype==1:
 
-                if self.send_mail(mailto_list,"QA Team小组-日报创建提醒 ",daycontent):  
+            if teamtype==2:
+                oprt = oprtoken()
+                token = oprt.generate_report_token(memberid,email, name, teamid,teamname,teamtype, 3600)
+                token = str(token)
+                token = token[2:len(token)-1]
+                host = settings.host
+                port = settings.port
+                reporturl ="http://"+host+":"+str(port)+"/inputreport/"+token    
+                weekcontent = "<h5>Hello "+name+",</h5>\
+            <p>您的周报链接已经创建，请于今天18:30 前填写提交.</p>\
+            <p>本周报隶属于<strong>"+teamname+"</strong>小组</p>\
+            <p>链接地址: <a href="+reporturl+">click here</a></p>\
+            谢谢"
+                mailto_list=[email] 
+                if self.send_mail(mailto_list,teamname+"小组-周报创建提醒 ",weekcontent):  
                     print("发送成功")  
                 else:  
-                    print("发送失败")  
-            else:
-                if self.send_mail(mailto_list,"QA Team小组-日报创建提醒 ",weekcontent):  
-                    print("发送成功")  
-                else:  
-                    print("发送失败")  
-                
-
-                
+                    print("发送失败")                                  
             i =i+1        
-    def dingshi(self):
+    def dingshiribao(self):
         while True:
-            if datetime.datetime.now().strftime('%H:%M:%S') == "13:51:00":
-                self.autosend()
-                sleep(1)
+            if datetime.datetime.now().strftime('%H:%M') == self.dailytime:
+                self.autoSendDailyReport()
+                sleep(85000)
+            else:
+                sleep(55)
+                
+    def dingshizhoubao(self):
+        while True:
+            a=time.localtime()
+
+            if time.strftime("%A",a) ==self.weeklyreportday:
+                if datetime.datetime.now().strftime('%H:%M') == self.weeklytime:
+                    self.autoSendWeeklyReport()
+                    sleep(85000)
+                else:
+                    sleep(55)
+            else:
+                sleep(40000)
 
     def perform_command(self,inc):
         self.schedule.enter(inc, 0, self.perform_command, (inc,))  
@@ -215,11 +256,12 @@ if __name__ == '__main__':
 #    print(SECRET_KEY)
     mail_host="smtp.163.com"  #设置服务器
     mail_user="beyondsoftbugzilla@163.com"    #用户名
-    mail_pass="wangxun2"   #口令 
-    a = sendmail(mail_host,mail_user,mail_pass,dbsqlitepath)
+    mail_pass="wangxun2"   #口令
+
+    a = sendmail(mail_host,mail_user,mail_pass,settings.dbsqlitepath)
 #    print(dbsqlitepath)
-    b =oprsql(dbsqlitepath)
-    a.autosend()
+    b =oprsql(settings.dbsqlitepath)
+    a.autoSendWeeklyReport()
 
     print(b.getmembers())
 #    t =threading.Thread(target=a.dingshi)

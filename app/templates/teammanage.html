@@ -7,27 +7,33 @@
 		    <th>id</th>
 		    <th>名称</th>
 		    <th>类型</th>
+		    <th>成员</th>
 		    <th>操作</th>
 		  </tr>
 		  {%for i in teams%}
 		  <tr>
-		    <td>{{i.id}}</td>
-		    <td>{{i.name}}</td>
+		    <td>{{i.get('id')}}</td>
+		    <td>{{i.get('name')}}</td>
 		    <td>
-		    {%if i.type==1%}
+		    {%if i.get('type')==1%}
 		    	日报组
 		    {%else%}
 		    	周报组
 		    {%end%}
 		    
+		    <td>
+		    {%for m in i.get('members')%}
+		    	{{m.get('name')}} <a href="/viewreport/{{m.get('id')}}!@{{i.get('id')}}!@{{i.get('type')}}">查看</a><br>
+		    {%end%}
+		    </td>
 		    
 		    
 		    
 		    
 		    
 		    </td>
-		    <td><a href="/deleteteam/{{i.id}}">删除</a>
-		    <a href="/editteam/{{i.id}}">编辑</a>
+		    <td><a href="/deleteteam/{{i.get('id')}}">删除</a>
+		    <a href="/editteam/{{i.get('id')}}">编辑</a>
 		    </td>
 		  </tr>
 		  {%end%}

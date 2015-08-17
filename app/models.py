@@ -49,6 +49,7 @@ class Member(BaseModel):
     id = Column(Integer, primary_key=True)
     email = Column(CHAR(),unique = True)
     name = Column(CHAR()) 
+    datetime = Column(DateTime,default = datetime.datetime.now())
     teams = relationship('Team_member',backref='member', lazy='dynamic')
     
 
@@ -60,9 +61,9 @@ class Team(BaseModel):
     __tablename__ = 'team'
     id = Column(Integer, primary_key=True)
     name = Column(CHAR()) 
-    members = relationship('Team_member',backref='team', lazy='dynamic')
     type = Column(Integer, default =1)
-    
+    datetime = Column(DateTime,default = datetime.datetime.now())
+    members = relationship('Team_member',backref='team', lazy='dynamic')    
 
 
     def __repr__(self):
@@ -72,9 +73,7 @@ class Team_member(BaseModel):
     __tablename__ = 'teammember'
     id = Column(Integer, primary_key=True)
     teamid = Column(Integer, ForeignKey('team.id'))
-    teamname = Column(CHAR()) 
     memberid = Column(Integer, ForeignKey('member.id'))
-    memberemail = Column(CHAR()) 
     
 
 
@@ -109,6 +108,9 @@ if __name__ == '__main__':
     drop_db()
     init_db()
     email = "59853844@qq.com"
+    user=User(name = '王勋',password = "123",email ="59853844@qq.com")
+    session.add(user)
+
 #    m = session.query(Member).filter(Member.email =="59853844@qq.com").scalar()
 #    t = session.query(Team).all()
 

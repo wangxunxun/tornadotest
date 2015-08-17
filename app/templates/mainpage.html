@@ -5,23 +5,17 @@
 	<title>AMS管理平台</title>
 </head>
 <div class="top"><p>AMS管理平台</p>
-<p class="username">{{ current_user }}<br><a href = '/logout'>退出登陆</a></p></div>
-
-
 <div class="menu">
-  <ul>
-    
-    <li><a href="/teammanage">小组管理</a></li>
-    <li><a href="/membermanage">人员管理</a></li>
+<a href="/login">登陆</a>
 
-  </ul>
+
 </div>
 
 <body>
     <div id="container">
         <div id="main">
             <div id="bodytitle">
-                <h2>{{bodytitle}}</h2>
+                <h2>欢迎使用AMD管理平台</h2>
             </div>
             <div id="content">
                 {% block body %}{% end %}
