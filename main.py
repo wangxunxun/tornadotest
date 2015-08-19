@@ -3,17 +3,12 @@ import tornado.httpserver
 import tornado.ioloop
 import tornado.options
 import os.path
-from app.handlers.userHandler import LoginHandler,LogoutHandler,RegistHandler
-from app.handlers.baseHandler import xmlHandler,NoFoundHandler,SuccessHandler,MainpageHandler
 
-from app.handlers.MemberHandlers import addMemberHandler,deleteJoinedTeamHandler,deleteMemberHandler,\
-editMemberHandler,memberManageHandler
-from app.handlers.TeamHandlers import addTeamHandler,deleteTeamHandler,editTeamHandler,teamManageHandler
-from app.handlers.ReportHandlers import inputReportHandler,viewReportHandler
 from app.utils import AutoSendEmail
 import settings
 from tornado.options import define, options
 import threading
+from app.handlers import baseHandler,MemberHandlers,ReportHandlers,TeamHandlers,userHandler
 
 
 
@@ -21,27 +16,9 @@ define("port", default=8000, help="run on the given port", type=int)
 
 class Application(tornado.web.Application):
     def __init__(self): 
-        handlers = [
 
-            (r"/login",LoginHandler),
-            (r"/regist",RegistHandler),
-            (r'/logout', LogoutHandler),
-            (r"/", MainpageHandler),
-            (r"/xml", xmlHandler),
-            (r"/addteam", addTeamHandler),
-            (r"/addmember", addMemberHandler),
-            (r"/teammanage", teamManageHandler),
-            (r"/membermanage", memberManageHandler),
-            (r"/deleteteam/(.*)", deleteTeamHandler),
-            (r"/deletemember/(.*)", deleteMemberHandler),
-            (r"/deletejoinedteam/(.*)", deleteJoinedTeamHandler),
-            (r"/editteam/(.*)", editTeamHandler),
-            (r"/editmember/(.*)", editMemberHandler),
-            (r"/inputreport/(.*)", inputReportHandler),
-            (r"/viewreport/(.*)", viewReportHandler),
-            (r"/success", SuccessHandler),
-            (r"/404", NoFoundHandler),
-        ]
+        handlers = baseHandler.routes+MemberHandlers.routes+ReportHandlers.routes+\
+        TeamHandlers.routes+userHandler.routes
         
         settings = dict(
             template_path=os.path.join(os.path.dirname(__file__), "app/templates"),

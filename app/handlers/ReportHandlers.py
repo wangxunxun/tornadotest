@@ -60,3 +60,11 @@ class viewReportHandler(BaseHandler):
         if teamtype =='2':
             report = self.session.query(WeeklyReport).filter(WeeklyReport.memberid==memberid,WeeklyReport.teamid==teamid).all()
             self.render('viewweeklyreport.html',bodytitle = "查看周报",member = member,team = team,report = report)
+            
+routes = [
+
+
+    (r"/inputreport/(.*)", inputReportHandler),
+    (r"/viewreport/(.*)", viewReportHandler),
+
+        ]

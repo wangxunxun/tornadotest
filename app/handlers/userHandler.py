@@ -55,3 +55,10 @@ class LogoutHandler(BaseHandler):
     def get(self):
         self.set_secure_cookie("user", "")
         self.redirect("login")
+        
+routes = [
+
+    (r"/login",LoginHandler),
+    (r"/regist",RegistHandler),
+    (r'/logout', LogoutHandler),
+        ]

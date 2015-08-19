@@ -92,4 +92,11 @@ class BookModule(tornado.web.UIModule):
     def render(self, book):
         return self.render_string('modules/book.html', book=book)
     
- 
+routes = [
+
+
+    (r"/", MainpageHandler),
+    (r"/xml", xmlHandler),
+    (r"/success", SuccessHandler),
+    (r"/404", NoFoundHandler),
+]

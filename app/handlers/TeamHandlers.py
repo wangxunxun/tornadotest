@@ -6,6 +6,7 @@ Created on 2015年8月12日
 from .baseHandler import BaseHandler
 from ..models import User,Team,Member,Team_member
 import tornado.web
+from app.handlers.userHandler import routes
 
 class addTeamHandler(BaseHandler):
     @tornado.web.authenticated
@@ -86,3 +87,17 @@ class teamManageHandler(BaseHandler):
             teamdata.append(teaminfo)
                                       
         self.render("teammanage.html",  bodytitle = "小组管理", teams = teamdata)
+
+
+routes = [
+
+
+    (r"/addteam", addTeamHandler),
+
+    (r"/teammanage", teamManageHandler),
+
+    (r"/deleteteam/(.*)", deleteTeamHandler),
+
+    (r"/editteam/(.*)", editTeamHandler),
+
+        ]

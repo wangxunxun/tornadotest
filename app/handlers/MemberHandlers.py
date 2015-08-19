@@ -6,6 +6,7 @@ Created on 2015年8月12日
 from .baseHandler import BaseHandler
 from ..models import User,Team,Member,Team_member
 import tornado.web
+from app.handlers.ReportHandlers import routes
 
 class deleteMemberHandler(BaseHandler):
     @tornado.web.authenticated
@@ -148,3 +149,18 @@ class editMemberHandler(BaseHandler):
         self.session.add(member)
         self.session.commit() 
         self.redirect("/membermanage")
+
+
+routes = [
+
+
+    (r"/addmember", addMemberHandler),
+
+    (r"/membermanage", memberManageHandler),
+
+    (r"/deletemember/(.*)", deleteMemberHandler),
+    (r"/deletejoinedteam/(.*)", deleteJoinedTeamHandler),
+
+    (r"/editmember/(.*)", editMemberHandler),
+
+        ]
